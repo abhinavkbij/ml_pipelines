@@ -194,3 +194,6 @@ fabric.properties
 
 data/
 mlruns/
+
+
+.DS_Store

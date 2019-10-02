@@ -51,6 +51,8 @@ def download_data():
 
 
 def create_data_processor():
+	create_folders()
+	download_data()
 	print("creating preprocessor...")
 	dataprocessor = build_train(TRAIN_PATH/'train.csv', DATAPROCESSORS_PATH)
 
