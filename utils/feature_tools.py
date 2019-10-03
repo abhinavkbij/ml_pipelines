@@ -1,6 +1,6 @@
 import pandas as pd
 import copy
-
+from sklearn.preprocessing import LabelEncoder
 
 class FeatureTools(object):
 	"""Collection of preprocessing methods"""
@@ -98,7 +98,7 @@ class FeatureTools(object):
 
 		return df, val_to_idx
 
-	def fit(self, df_inp, target_col, numerical_columns, categorical_columns, x_columns, sc):
+	def fit(self, df_inp, target_col,categorical_columns,numerical_columns,sc):
 		"""
 		Parameters:
 		-----------
@@ -116,15 +116,21 @@ class FeatureTools(object):
 		df = df_inp.copy()
 		self.numerical_columns = numerical_columns
 		self.categorical_columns = categorical_columns
-		self.x_columns = x_columns
+		print (categorical_columns)
+		print ("=======================")
+		# self.x_columns = x_columns
 
 		df, self.sc = self.num_scaler(df, numerical_columns, sc)
-		df, self.crossed_columns = self.cross_columns(df, x_columns)
-		df, self.encoding_d = self.val2idx(df, categorical_columns+self.crossed_columns)
+		# df, self.crossed_columns = self.cross_columns(df, x_columns)
+		df, self.encoding_d = self.val2idx(df, categorical_columns)
 
+		le = LabelEncoder()
+		df[target_col] = le.fit_transform(df[target_col])
 		self.target = df[target_col]
 		df.drop(target_col, axis=1, inplace=True)
 		self.data = df
+		print ("df.columns")
+		print (df.columns)
 		self.colnames = df.columns.tolist()
 
 		return self
@@ -148,7 +154,7 @@ class FeatureTools(object):
 			sc = copy.deepcopy(self.sc)
 
 		df, _ = self.num_scaler(df, self.numerical_columns, sc, trained=True)
-		df, _ = self.cross_columns(df, self.x_columns)
-		df, _ = self.val2idx(df, self.categorical_columns+self.crossed_columns, self.encoding_d)
+		# df, _ = self.cross_columns(df, self.x_columns)
+		df, _ = self.val2idx(df, self.categorical_columns, self.encoding_d)
 
 		return df

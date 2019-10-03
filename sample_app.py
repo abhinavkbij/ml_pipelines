@@ -10,7 +10,8 @@ from time import sleep
 
 PATH = Path('data/')
 KAFKA_HOST = 'localhost:9092'
-df_test = pd.read_csv(PATH/'adult.test')
+cols = ['ProductName','Country','LocalLeaderShip','LocalEmployees','BuyerProfession','ProofOfCoverage','LocalServers','NoOfClaims','Proposed Policy Type']
+df_test = pd.read_csv(PATH/'FL_New_test.csv',usecols=cols)
 # In the real world, the messages would not come with the target/outcome of
 # our actions. Here we will keep it and assume that at some point in the
 # future we can collect the outcome and monitor how our algorithm is doing

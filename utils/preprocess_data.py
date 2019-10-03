@@ -19,10 +19,22 @@ def load_new_training_data(path):
 	return pd.DataFrame(data)
 
 
+def removeChars(df,columns):
+    """
+    Remove unnecessary characters and double spaces from labels.
+    Params:
+        df: Input Dataframe.
+        columns: columns which have unnecessary characters in a list.
+    """
+    for col in columns:
+        df[col] = df[col].map(lambda x: x.replace("?","") if type(x)==str else x)
+        df[col] = df[col].map(lambda x: " ".join(x.split()) if type(x)==str else x)
+
 def build_train(train_path, results_path, dataprocessor_id=0, PATH_2=None):
-	target = 'income_label'
+	target = 'Proposed Policy Type'
 	# read initial DataFrame
-	df = pd.read_csv(train_path)
+	cols = ['ProductName','Country','LocalLeaderShip','LocalEmployees','BuyerProfession','ProofOfCoverage','LocalServers','NoOfClaims','Proposed Policy Type']
+	df = pd.read_csv(train_path,usecols=cols)
 	if PATH_2:
 		df_tmp = load_new_training_data(PATH_2)
 		# Let's make sure columns are in the same order
@@ -32,20 +44,25 @@ def build_train(train_path, results_path, dataprocessor_id=0, PATH_2=None):
 		# Save it to disk
 		df.to_csv(train_path, index=False)
 
-	df[target] = (df['income_bracket'].apply(lambda x: '>50K' in x)).astype(int)
-	df.drop('income_bracket', axis=1, inplace=True)
+	removeChars(df,['Proposed Policy Type'])
+	dictionary = {'Local - Admitted':'Local-Admitted','Local - Non Program':'Local-NP','Master - Primary Admitted':'Master-Primary Admitted','Master - Primary Non - Admitted':'Master-Primary Non-Admitted'}
+	df[target] = df['Proposed Policy Type'].replace(to_replace=dictionary)
+	# df.drop('Proposed Policy Type', axis=1, inplace=True)
 
-	categorical_columns = list(df.select_dtypes(include=['object']).columns)
+	categorical_columns = list(df.drop(target,axis=1).select_dtypes(include=['object']).columns)
+	print ("categorical_columns")
+	print (categorical_columns)
 	numerical_columns = [c for c in df.columns if c not in categorical_columns+[target]]
-	crossed_columns = (['education', 'occupation'], ['native_country', 'occupation'])
+	print (numerical_columns)
+	# crossed_columns = (['education', 'occupation'], ['native_country', 'occupation'])
 
 	preprocessor = FeatureTools()
 	dataprocessor = preprocessor.fit(
 		df,
 		target,
-		numerical_columns,
 		categorical_columns,
-		crossed_columns,
+		numerical_columns,
+		# crossed_columns,
 		sc=MinMaxScaler()
 		)
 
