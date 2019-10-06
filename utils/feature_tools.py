@@ -1,6 +1,6 @@
 import pandas as pd
 import copy
-
+from sklearn.preprocessing import LabelEncoder
 
 class FeatureTools(object):
 	"""Collection of preprocessing methods"""
@@ -92,13 +92,14 @@ class FeatureTools(object):
 			val_to_idx = dict()
 			for k, v in val_types.items():
 			    val_to_idx[k] = {o: i for i, o in enumerate(val_types[k])}
-
+		print ('00----=====--220--2-')
+		print (val_to_idx)
 		for k, v in val_to_idx.items():
 		    df[k] = df[k].apply(lambda x: v[x])
 
 		return df, val_to_idx
 
-	def fit(self, df_inp, target_col, numerical_columns, categorical_columns, x_columns, sc):
+	def fit(self, df_inp, target_col):
 		"""
 		Parameters:
 		-----------
@@ -114,17 +115,13 @@ class FeatureTools(object):
 		structure
 		"""
 		df = df_inp.copy()
-		self.numerical_columns = numerical_columns
-		self.categorical_columns = categorical_columns
-		self.x_columns = x_columns
-
-		df, self.sc = self.num_scaler(df, numerical_columns, sc)
-		df, self.crossed_columns = self.cross_columns(df, x_columns)
-		df, self.encoding_d = self.val2idx(df, categorical_columns+self.crossed_columns)
-
+		le = LabelEncoder()
+		df[target_col] = le.fit_transform(df[target_col])
 		self.target = df[target_col]
 		df.drop(target_col, axis=1, inplace=True)
 		self.data = df
+		print ("-----------")
+		print (df.columns)
 		self.colnames = df.columns.tolist()
 
 		return self
@@ -142,13 +139,14 @@ class FeatureTools(object):
 			Tranformed dataframe: scaled, Labelencoded and with crossed columns
 		"""
 		df = df_inp.copy()
-		if trained_sc:
-			sc = copy.deepcopy(trained_sc)
-		else:
-			sc = copy.deepcopy(self.sc)
 
-		df, _ = self.num_scaler(df, self.numerical_columns, sc, trained=True)
-		df, _ = self.cross_columns(df, self.x_columns)
-		df, _ = self.val2idx(df, self.categorical_columns+self.crossed_columns, self.encoding_d)
+		# if trained_sc:
+		# 	sc = copy.deepcopy(trained_sc)
+		# else:
+		# 	sc = copy.deepcopy(self.sc)
+
+		# df, _ = self.num_scaler(df, self.numerical_columns, sc, trained=True)
+		# df, _ = self.cross_columns(df, self.x_columns)
+		# df, _ = self.val2idx(df, self.categorical_columns, self.encoding_d)
 
 		return df

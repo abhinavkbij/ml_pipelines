@@ -28,26 +28,12 @@ def create_folders():
 
 
 def download_data():
-	train_path = PATH/'adult.data'
-	test_path = PATH/'adult.test'
-
-	COLUMNS = ["age", "workclass", "fnlwgt", "education", "education_num",
-	           "marital_status", "occupation", "relationship", "race", "gender",
-	           "capital_gain", "capital_loss", "hours_per_week", "native_country",
-	           "income_bracket"]
-
 	print("downloading training data...")
-	df_train = pd.read_csv("http://mlr.cs.umass.edu/ml/machine-learning-databases/adult/adult.data",
-	    names=COLUMNS, skipinitialspace=True, index_col=0)
-	df_train.drop("education_num", axis=1, inplace=True)
-	df_train.to_csv(train_path)
-	df_train.to_csv(PATH/'train/train.csv')
+	df_train = pd.read_csv(PATH/'OHE_FLNew_train.csv',index_col=[0])
+	df_train.to_csv(PATH/'train/train.csv',index=False)
 
-	print("downloading testing data...")
-	df_test = pd.read_csv("http://mlr.cs.umass.edu/ml/machine-learning-databases/adult/adult.test",
-	    names=COLUMNS, skipinitialspace=True, skiprows=1, index_col=0)
-	df_test.drop("education_num", axis=1, inplace=True)
-	df_test.to_csv(test_path)
+	df_test = pd.read_csv(PATH/'OHE_FLNew_test.csv',index_col=[0])
+	df_test.to_csv(PATH/'train/test.csv',index=False)
 
 
 def create_data_processor():
@@ -63,12 +49,12 @@ def create_model(hyper):
 	dtrain = pickle.load(open(DATAPROCESSORS_PATH/init_dataprocessor, 'rb'))
 	if hyper == "hyperopt":
 		# from train.train_hyperopt import LGBOptimizer
-		from train.train_hyperopt_mlflow import LGBOptimizer
+		from train.rf_hyperopt import RFOptimizer
 	elif hyper == "hyperparameterhunter":
 		# from train.train_hyperparameterhunter import LGBOptimizer
-		from train.train_hyperparameterhunter_mlfow import LGBOptimizer
-	LGBOpt = LGBOptimizer(dtrain, MODELS_PATH)
-	LGBOpt.optimize(maxevals=50)
+		return ("hyperparameterhunter not included yet!")
+	RFOpt = RFOptimizer(dtrain, MODELS_PATH)
+	RFOpt.optimize(maxevals=50)
 
 
 if __name__ == '__main__':

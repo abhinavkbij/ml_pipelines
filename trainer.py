@@ -25,12 +25,13 @@ def train(model_id, messages, hyper):
 	dtrain = build_train(TRAIN_DATA, DATAPROCESSORS_PATH, model_id, messages)
 	if hyper == "hyperopt":
 		# from train.train_hyperopt import LGBOptimizer
-		from train.train_hyperopt_mlflow import LGBOptimizer
+		from train.rf_hyperopt import RFOptimizer
 	elif hyper == "hyperparameterhunter":
 		# from train.train_hyperparameterhunter import LGBOptimizer
-		from train.train_hyperparameterhunter_mlfow import LGBOptimizer
-	LGBOpt = LGBOptimizer(dtrain, MODELS_PATH)
-	LGBOpt.optimize(maxevals=2, model_id=model_id)
+		# from train.train_hyperparameterhunter_mlfow import LGBOptimizer
+		return ("hyperparameterhunter is not included yet!!")
+	RFOpt = RFOptimizer(dtrain, MODELS_PATH)
+	RFOpt.optimize(maxevals=2, model_id=model_id)
 	print("RETRAINING COMPLETED (model id: {})".format(model_id))
 
 

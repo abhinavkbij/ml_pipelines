@@ -7,6 +7,7 @@ import warnings
 from pathlib import Path
 from utils.feature_tools import FeatureTools
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import LabelEncoder
 
 warnings.filterwarnings("ignore")
 
@@ -18,10 +19,10 @@ def load_new_training_data(path):
 			data.append(json.loads(line))
 	return pd.DataFrame(data)
 
-
 def build_train(train_path, results_path, dataprocessor_id=0, PATH_2=None):
-	target = 'income_label'
+	target = 'Proposed Policy Type'
 	# read initial DataFrame
+	cols = ['ProductName','Country','LocalLeaderShip','LocalEmployees','BuyerProfession','ProofOfCoverage','LocalServers','NoOfClaims','Proposed Policy Type']
 	df = pd.read_csv(train_path)
 	if PATH_2:
 		df_tmp = load_new_training_data(PATH_2)
@@ -30,23 +31,16 @@ def build_train(train_path, results_path, dataprocessor_id=0, PATH_2=None):
 		# append new DataFrame
 		df = pd.concat([df, df_tmp], ignore_index=True)
 		# Save it to disk
-		df.to_csv(train_path, index=False)
+		df.to_csv(train_path,index=False)
 
-	df[target] = (df['income_bracket'].apply(lambda x: '>50K' in x)).astype(int)
-	df.drop('income_bracket', axis=1, inplace=True)
-
-	categorical_columns = list(df.select_dtypes(include=['object']).columns)
-	numerical_columns = [c for c in df.columns if c not in categorical_columns+[target]]
-	crossed_columns = (['education', 'occupation'], ['native_country', 'occupation'])
+	# categorical_columns = list(df.drop(target,axis=1).select_dtypes(include=['object']).columns)
+	# numerical_columns = [c for c in df.columns if c not in categorical_columns+[target]]
+	# crossed_columns = (['education', 'occupation'], ['native_country', 'occupation'])
 
 	preprocessor = FeatureTools()
 	dataprocessor = preprocessor.fit(
 		df,
 		target,
-		numerical_columns,
-		categorical_columns,
-		crossed_columns,
-		sc=MinMaxScaler()
 		)
 
 	dataprocessor_fname = 'dataprocessor_{}_.p'.format(dataprocessor_id)

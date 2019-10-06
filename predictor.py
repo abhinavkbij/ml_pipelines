@@ -39,13 +39,16 @@ def is_application_message(msg):
 def predict(message, column_order):
 	row = pd.DataFrame(message, index=[0])
 	# sanity check
+	print ("column_order")
+	print (column_order)
+	print (row.columns.tolist()[:-1])
 	assert row.columns.tolist()[:-1] == column_order
 	# In the real world we would not have the target (here 'income_bracket').
 	# In this example we keep it and we will retrain the model as it reads
 	# RETRAIN_EVERY number of messages. In the real world, after RETRAIN_EVERY
 	# number of messages have been collected, one would have to wait until we
 	# can collect RETRAIN_EVERY targets AND THEN retrain
-	row.drop('income_bracket', axis=1, inplace=True)
+	row.drop('Proposed Policy Type', axis=1, inplace=True)
 	trow = dataprocessor.transform(row)
 	return model.predict(trow)[0]
 
