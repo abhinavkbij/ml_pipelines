@@ -127,8 +127,8 @@ class LGBOptimizer(object):
 			mlflow.log_metric('binary_logloss', trials.best_trial['result']['loss'])
 			mlflow.sklearn.log_model(model, "model")
 
-		model_fname = 'model_{}_.p'.format(model_id)
-		best_experiment_fname = 'best_experiment_{}_.p'.format(model_id)
+		model_fname = 'model_{}_Adult.p'.format(model_id)
+		best_experiment_fname = 'best_experiment_{}_Adult.p'.format(model_id)
 
 		pickle.dump(model, open(self.PATH/model_fname, 'wb'))
 		pickle.dump(best, open(self.PATH/best_experiment_fname, 'wb'))

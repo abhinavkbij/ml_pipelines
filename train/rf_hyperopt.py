@@ -98,19 +98,16 @@ class RFOptimizer(object):
 					trials=trials)
 		# best['num_boost_round'] = self.early_stop_dict[trials.best_trial['tid']]
 		# best['num_leaves'] = int(best['num_leaves'])
-		best['verbose'] = -1
+		# best['verbose'] = -1
 		best['criterion'] = ['gini','entropy'][best['criterion']]
-		best['n_jobs'] = 2
-		print (best)
-		print (type(best['criterion']))
-		print ("=======================")
+		best['n_jobs'] = 3
 
 		# set the model with the best parameters, fit and save
 		model = RandomForestClassifier(**best)
 		model.fit(self.X, self.y)
 
-		model_fname = 'model_{}_.p'.format(model_id)
-		best_experiment_fname = 'best_experiment_{}_.p'.format(model_id)
+		model_fname = 'model_{}_FLNew.p'.format(model_id)
+		best_experiment_fname = 'best_experiment_{}_FLNew.p'.format(model_id)
 
 		pickle.dump(model, open(self.PATH/model_fname, 'wb'))
 		pickle.dump(best, open(self.PATH/best_experiment_fname, 'wb'))
@@ -130,7 +127,7 @@ class RFOptimizer(object):
 			if acc > self.best:
 				self.best = acc
 			# print ('new best:', self.best, params)
-			error = -acc
+			error = 1-acc
 			return error
 
 		return objective
@@ -139,8 +136,8 @@ class RFOptimizer(object):
 
 		space = {
 			'max_depth': hp.choice('max_depth', range(1,20)),
-			'max_features': hp.choice('max_features', range(1,5)),
-			'n_estimators': hp.choice('n_estimators', range(1,20)),
+			'max_features': hp.choice('max_features', range(1,419)),
+			'n_estimators': hp.choice('n_estimators', range(1,5000)),
 			'criterion': hp.choice('criterion', ["gini", "entropy"])
 		}
 

@@ -79,8 +79,8 @@ class LGBOptimizer(object):
             feature_name=self.colnames,
             categorical_feature=self.categorical_columns
             )
-        model_fname = 'model_{}_.p'.format(model_id)
-        best_experiment_fname = 'best_experiment_{}_.p'.format(model_id)
+        model_fname = 'model_{}_Adult.p'.format(model_id)
+        best_experiment_fname = 'best_experiment_{}_Adult.p'.format(model_id)
         pickle.dump(model, open('/'.join([self.PATH,model_fname]), 'wb'))
         pickle.dump(optimizer, open('/'.join([self.PATH,best_experiment_fname]), 'wb'))
 

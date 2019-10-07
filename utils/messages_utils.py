@@ -5,10 +5,13 @@ from kafka import KafkaProducer
 
 producer = KafkaProducer(bootstrap_servers='localhost:9092')
 
-def publish_prediction(pred, request_id):
-	producer.send('app_messages', json.dumps({'request_id': request_id, 'prediction': float(pred)}).encode('utf-8'))
+def publish_prediction_flnew(pred, request_id):
+	producer.send('app_messages_flnew', json.dumps({'request_id': request_id, 'prediction': float(pred)}).encode('utf-8'))
 	producer.flush()
 
+def publish_prediction_adult(pred, request_id):
+	producer.send('app_messages_adult', json.dumps({'request_id': request_id, 'prediction': float(pred)}).encode('utf-8'))
+	producer.flush()
 
 def publish_traininig_completed(model_id):
 	producer.send('retrain_topic', json.dumps({'training_completed': True, 'model_id': model_id}).encode('utf-8'))
@@ -24,12 +27,17 @@ def read_messages_count(path, repeat_every):
 		return ((nfiles-1)*repeat_every) + len(file_list[-1].open().readlines())
 
 
-def append_message(message, path, batch_id):
-	message_fname = 'messages_{}_.txt'.format(batch_id)
+def append_message_flnew(message, path, batch_id):
+	message_fname = 'messages_{}_FLNew.txt'.format(batch_id)
 	f=open(path/message_fname, "a")
 	f.write("%s\n" % (json.dumps(message)))
 	f.close()
 
+def append_message_adult(message, path, batch_id):
+	message_fname = 'messages_{}_Adult.txt'.format(batch_id)
+	f=open(path/message_fname, "a")
+	f.write("%s\n" % (json.dumps(message)))
+	f.close()
 
 def send_retrain_message(model_id, batch_id):
 	producer.send('retrain_topic', json.dumps({'retrain': True, 'model_id': model_id, 'batch_id': batch_id}).encode('utf-8'))

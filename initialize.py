@@ -30,22 +30,22 @@ def create_folders():
 def download_data():
 	print("downloading training data...")
 	df_train = pd.read_csv(PATH/'OHE_FLNew_train.csv',index_col=[0])
-	df_train.to_csv(PATH/'train/train.csv',index=False)
+	df_train.to_csv(PATH/'train/trainFLNew.csv',index=False)
 
 	df_test = pd.read_csv(PATH/'OHE_FLNew_test.csv',index_col=[0])
-	df_test.to_csv(PATH/'train/test.csv',index=False)
+	df_test.to_csv(PATH/'train/testFLNew.csv',index=False)
 
 
 def create_data_processor():
 	create_folders()
 	download_data()
 	print("creating preprocessor...")
-	dataprocessor = build_train(TRAIN_PATH/'train.csv', DATAPROCESSORS_PATH)
+	dataprocessor = build_train(TRAIN_PATH/'trainFLNew.csv', DATAPROCESSORS_PATH)
 
 
 def create_model(hyper):
 	print("creating model...")
-	init_dataprocessor = 'dataprocessor_0_.p'
+	init_dataprocessor = 'dataprocessor_0_FLNew.p'
 	dtrain = pickle.load(open(DATAPROCESSORS_PATH/init_dataprocessor, 'rb'))
 	if hyper == "hyperopt":
 		# from train.train_hyperopt import LGBOptimizer
